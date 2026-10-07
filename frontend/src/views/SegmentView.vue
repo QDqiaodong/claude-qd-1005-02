@@ -185,7 +185,9 @@ onMounted(load)
         </el-table>
         <div class="panel-title" style="margin:10px 0 4px">附属设备（{{ detail.facilities.length }}）</div>
         <el-table :data="detail.facilities" border size="small">
+          <el-table-column prop="name" label="名称" />
           <el-table-column prop="facilityType" label="类型" />
+          <el-table-column prop="location" label="位置" />
           <el-table-column prop="status" label="状态" />
         </el-table>
       </div>

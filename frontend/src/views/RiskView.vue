@@ -244,7 +244,9 @@ onMounted(async () => {
         <template v-if="detail.facility">
           <div class="panel-title" style="margin: 12px 0 6px">关联附属设备</div>
           <el-descriptions :column="2" border size="small">
+            <el-descriptions-item label="设备名称">{{ detail.facility.name || '—' }}</el-descriptions-item>
             <el-descriptions-item label="设备类型">{{ detail.facility.facilityType }}</el-descriptions-item>
+            <el-descriptions-item label="位置">{{ detail.facility.location || '—' }}</el-descriptions-item>
             <el-descriptions-item label="设备状态">{{ detail.facility.status }}</el-descriptions-item>
           </el-descriptions>
         </template>

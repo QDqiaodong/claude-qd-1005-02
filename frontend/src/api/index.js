@@ -50,7 +50,11 @@ export default {
 
   // ---------------- 附属设备 ----------------
   listFacilities: (segmentId) => call(http.get('/facilities', params(segmentId ? { segmentId } : {}))),
+  // 详情：回显以服务端已保存记录为准（与列表、舱段子项同一行）
+  getFacility: (id) => call(http.get(`/facilities/${id}`)),
   createFacility: (d) => call(http.post('/facilities', d)),
+  // 档案更新：名称 / 位置 / 所属舱段 / 类型一次落库，响应即落库后回读的记录
+  updateFacility: (id, d) => call(http.put(`/facilities/${id}`, d)),
   faultFacility: (id) => call(http.post(`/facilities/${id}/fault`)),
   restoreFacility: (id) => call(http.post(`/facilities/${id}/restore`)),
 

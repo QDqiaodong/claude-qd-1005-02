@@ -5,19 +5,33 @@
     <resultMap id="FacilityResult" type="com.utility.tunnel.entity.Facility">
         <id column="id" property="id"/>
         <result column="segment_id" property="segmentId"/>
+        <result column="name" property="name"/>
         <result column="facility_type" property="facilityType"/>
+        <result column="location" property="location"/>
         <result column="status" property="status"/>
         <result column="created_at" property="createdAt"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id, segment_id, facility_type, status, created_at
+        id, segment_id, name, facility_type, location, status, created_at
     </sql>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO facility (segment_id, facility_type, status, created_at)
-        VALUES (#{segmentId}, #{facilityType}, #{status}, UTC_TIMESTAMP())
+        INSERT INTO facility (segment_id, name, facility_type, location, status, created_at)
+        VALUES (#{segmentId}, #{name}, #{facilityType}, #{location}, #{status}, UTC_TIMESTAMP())
     </insert>
+
+    <!-- 档案更新：名称 / 位置 / 所属舱段 / 类型在同一条 UPDATE 中落库（同一行记录），
+         刻意不更新 status —— 状态只能经报故障 / 恢复流转，
+         避免编辑表单把并发变更过的旧状态写回 -->
+    <update id="update">
+        UPDATE facility
+        SET segment_id = #{segmentId},
+            name = #{name},
+            facility_type = #{facilityType},
+            location = #{location}
+        WHERE id = #{id}
+    </update>
 
     <select id="findBySegmentId" resultMap="FacilityResult">
         SELECT <include refid="Base_Column_List"/> FROM facility

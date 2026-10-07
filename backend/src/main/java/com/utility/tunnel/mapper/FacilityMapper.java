@@ -12,6 +12,9 @@ public interface FacilityMapper {
 
     int insert(Facility facility);
 
+    /** 档案字段整行更新（名称 / 位置 / 所属舱段 / 类型同一条 UPDATE 落库），不触碰 status */
+    int update(Facility facility);
+
     List<Facility> findBySegmentId(@Param("segmentId") Long segmentId);
 
     Facility selectById(@Param("id") Long id);

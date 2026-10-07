@@ -62,10 +62,14 @@ CREATE TABLE patrol_point (
 
 -- ---------------- 附属设备 ----------------
 -- facility_type ∈ {风机, 排水泵, 照明, 监控}；status ∈ {正常, 故障}
+-- name / location 为设备档案字段：与 segment_id 同行存储、同一条 UPDATE 落库，
+-- 列表 / 详情 / 舱段子项三处读取的都是这同一行，保证回显一致。
 CREATE TABLE facility (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     segment_id BIGINT NOT NULL,
+    name VARCHAR(64) NOT NULL,
     facility_type VARCHAR(16) NOT NULL,
+    location VARCHAR(128),
     status VARCHAR(16) NOT NULL,
     created_at DATETIME,
     KEY idx_facility_segment (segment_id)
@@ -117,10 +121,10 @@ INSERT INTO patrol_point (id, segment_id, point_code, location, last_patrol_at, 
 (2, 2, 'P-02', '桩号 K1+200', UTC_TIMESTAMP() + INTERVAL 8 HOUR - INTERVAL 5 DAY, UTC_TIMESTAMP() + INTERVAL 8 HOUR - INTERVAL 66 DAY),
 (3, 3, 'P-03', '桩号 K2+000', UTC_TIMESTAMP() + INTERVAL 8 HOUR - INTERVAL 9 DAY, UTC_TIMESTAMP() + INTERVAL 8 HOUR - INTERVAL 80 DAY);
 
-INSERT INTO facility (id, segment_id, facility_type, status, created_at) VALUES
-(1, 1, '风机',   '正常', UTC_TIMESTAMP() + INTERVAL 8 HOUR - INTERVAL 70 DAY),
-(2, 1, '排水泵', '故障', UTC_TIMESTAMP() + INTERVAL 8 HOUR - INTERVAL 70 DAY),
-(3, 4, '监控',   '故障', UTC_TIMESTAMP() + INTERVAL 8 HOUR - INTERVAL 55 DAY);
+INSERT INTO facility (id, segment_id, name, facility_type, location, status, created_at) VALUES
+(1, 1, '1#轴流风机',   '风机',   '桩号 K0+100 风亭',   '正常', UTC_TIMESTAMP() + INTERVAL 8 HOUR - INTERVAL 70 DAY),
+(2, 1, '集水坑排水泵', '排水泵', '桩号 K0+300 集水坑', '故障', UTC_TIMESTAMP() + INTERVAL 8 HOUR - INTERVAL 70 DAY),
+(3, 4, '燃气舱红外监控', '监控',  '桩号 K2+600 舱顶',   '故障', UTC_TIMESTAMP() + INTERVAL 8 HOUR - INTERVAL 55 DAY);
 
 -- 风险事件：SEG-01 一条已解除（可自由恢复运营）；
 -- SEG-03（维护）一条处理中、SEG-04（停用）一条待处置 —— 两舱段被封控，解除前不能恢复运营
