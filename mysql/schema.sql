@@ -61,13 +61,18 @@ CREATE TABLE patrol_point (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ---------------- 附属设备 ----------------
--- facility_type ∈ {风机, 排水泵, 照明, 监控}；status ∈ {正常, 故障}
+-- facility_name 设备名称、location 安装位置均为档案字段，随更新接口落库；
+-- updated_at 为行版本：更新 UPDATE 带版本条件，并发/陈旧提交影响 0 行，防止旧值覆盖新值。
 CREATE TABLE facility (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     segment_id BIGINT NOT NULL,
+    facility_name VARCHAR(64) NOT NULL,
     facility_type VARCHAR(16) NOT NULL,
+    location VARCHAR(128),
     status VARCHAR(16) NOT NULL,
     created_at DATETIME,
+    updated_at DATETIME(3),
+    UNIQUE KEY uk_facility_segment_name (segment_id, facility_name),
     KEY idx_facility_segment (segment_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -117,10 +122,10 @@ INSERT INTO patrol_point (id, segment_id, point_code, location, last_patrol_at, 
 (2, 2, 'P-02', '桩号 K1+200', UTC_TIMESTAMP() + INTERVAL 8 HOUR - INTERVAL 5 DAY, UTC_TIMESTAMP() + INTERVAL 8 HOUR - INTERVAL 66 DAY),
 (3, 3, 'P-03', '桩号 K2+000', UTC_TIMESTAMP() + INTERVAL 8 HOUR - INTERVAL 9 DAY, UTC_TIMESTAMP() + INTERVAL 8 HOUR - INTERVAL 80 DAY);
 
-INSERT INTO facility (id, segment_id, facility_type, status, created_at) VALUES
-(1, 1, '风机',   '正常', UTC_TIMESTAMP() + INTERVAL 8 HOUR - INTERVAL 70 DAY),
-(2, 1, '排水泵', '故障', UTC_TIMESTAMP() + INTERVAL 8 HOUR - INTERVAL 70 DAY),
-(3, 4, '监控',   '故障', UTC_TIMESTAMP() + INTERVAL 8 HOUR - INTERVAL 55 DAY);
+INSERT INTO facility (id, segment_id, facility_name, facility_type, location, status, created_at, updated_at) VALUES
+(1, 1, '北段 1# 送风机组',   '风机',   '桩号 K0+050 舱顶',   '正常', UTC_TIMESTAMP() + INTERVAL 8 HOUR - INTERVAL 70 DAY, NULL),
+(2, 1, '北段 2# 集水坑排水泵', '排水泵', '桩号 K0+300 集水坑', '故障', UTC_TIMESTAMP() + INTERVAL 8 HOUR - INTERVAL 70 DAY, NULL),
+(3, 4, '燃气舱可燃气体监控', '监控',   '桩号 K3+800 舱壁',   '故障', UTC_TIMESTAMP() + INTERVAL 8 HOUR - INTERVAL 55 DAY, NULL);
 
 -- 风险事件：SEG-01 一条已解除（可自由恢复运营）；
 -- SEG-03（维护）一条处理中、SEG-04（停用）一条待处置 —— 两舱段被封控，解除前不能恢复运营

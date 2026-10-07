@@ -76,6 +76,11 @@
         WHERE segment_id = #{segmentId} AND status != '已解除'
     </select>
 
+    <select id="countUnresolvedByFacility" resultType="int">
+        SELECT COUNT(*) FROM risk_event
+        WHERE source_type = '附属设备' AND source_id = #{facilityId} AND status != '已解除'
+    </select>
+
     <select id="findLatestUnresolved" resultMap="RiskEventViewResult">
         SELECT <include refid="View_Columns"/>
         <include refid="View_From"/>

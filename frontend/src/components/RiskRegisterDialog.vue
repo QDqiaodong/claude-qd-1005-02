@@ -45,7 +45,7 @@ async function loadSources() {
       sources.value = (list || []).map(p => ({ id: p.id, label: `${p.pointCode} · ${p.location || '无位置描述'}` }))
     } else {
       const list = await api.listFacilities(form.value.segmentId)
-      sources.value = (list || []).map(f => ({ id: f.id, label: `${f.facilityType}（${f.status}）#${f.id}` }))
+      sources.value = (list || []).map(f => ({ id: f.id, label: `${f.facilityName}（${f.facilityType}·${f.status}）#${f.id}` }))
     }
   } catch (e) { error.value = e.message }
 }

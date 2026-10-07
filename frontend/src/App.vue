@@ -26,7 +26,7 @@ const tabs = [
   { path: '/segment', label: '廊体舱段', sub: '断面 · 长度 · 运营/维护/停用' },
   { path: '/pipeline', label: '入廊管线', sub: '电力/通信/给水/排水/热力/燃气' },
   { path: '/patrol', label: '巡检点', sub: '点位 · 位置 · 最近巡检' },
-  { path: '/facility', label: '附属设备', sub: '风机/排水泵/照明/监控' },
+  { path: '/facility', label: '附属设施', sub: '名称 / 位置 / 所属舱段 · 风机/排水泵/照明/监控' },
   { path: '/risk', label: '风险事件', sub: '登记 · 处置 · 解除封控' }
 ]
 

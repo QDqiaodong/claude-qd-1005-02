@@ -48,9 +48,11 @@ export default {
   createPatrolPoint: (d) => call(http.post('/patrol-points', d)),
   registerPatrol: (id) => call(http.post(`/patrol-points/${id}/register`)),
 
-  // ---------------- 附属设备 ----------------
+  // ---------------- 附属设备（设施） ----------------
   listFacilities: (segmentId) => call(http.get('/facilities', params(segmentId ? { segmentId } : {}))),
+  getFacility: (id) => call(http.get(`/facilities/${id}`)),
   createFacility: (d) => call(http.post('/facilities', d)),
+  updateFacility: (id, d) => call(http.put(`/facilities/${id}`, d)),
   faultFacility: (id) => call(http.post(`/facilities/${id}/fault`)),
   restoreFacility: (id) => call(http.post(`/facilities/${id}/restore`)),
 

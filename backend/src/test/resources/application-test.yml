@@ -1,0 +1,28 @@
+server:
+  port: 0
+
+spring:
+  datasource:
+    # H2 MySQL 兼容模式：回归测试在内存库上跑生产 MyBatis XML，无需外部 MySQL
+    url: jdbc:h2:mem:tunnel;MODE=MySQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1;LOCK_TIMEOUT=5000
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema-h2.sql
+      data-locations: classpath:data-h2.sql
+  jpa:
+    hibernate:
+      ddl-auto: none
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6399
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.utility.tunnel.entity
+  configuration:
+    map-underscore-to-camel-case: true

@@ -25,6 +25,9 @@ public interface RiskEventMapper {
     /** 未解除（待处置/处理中）事件数：舱段恢复运营的封控判定依据 */
     int countUnresolvedBySegment(@Param("segmentId") Long segmentId);
 
+    /** 指定附属设备上未解除事件数：设备改舱段前必须为 0，防止封控对象被“挪走”而绕过封控 */
+    int countUnresolvedByFacility(@Param("facilityId") Long facilityId);
+
     /** 最近一条未解除事件：用于拼当前封控原因 */
     RiskEventView findLatestUnresolved(@Param("segmentId") Long segmentId);
 

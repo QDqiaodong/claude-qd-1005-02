@@ -5,35 +5,80 @@
     <resultMap id="FacilityResult" type="com.utility.tunnel.entity.Facility">
         <id column="id" property="id"/>
         <result column="segment_id" property="segmentId"/>
+        <result column="facility_name" property="facilityName"/>
         <result column="facility_type" property="facilityType"/>
+        <result column="location" property="location"/>
         <result column="status" property="status"/>
         <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+        <result column="seg_code" property="segCode"/>
+        <result column="seg_name" property="segName"/>
     </resultMap>
 
+    <!-- 列表 / 详情 / 舱段子项共用同一份字段与同一条 JOIN：名称、位置、所属舱段必然来自同一行 -->
     <sql id="Base_Column_List">
-        id, segment_id, facility_type, status, created_at
+        f.id, f.segment_id, f.facility_name, f.facility_type, f.location, f.status,
+        f.created_at, f.updated_at,
+        s.seg_code, s.seg_name
+    </sql>
+
+    <sql id="Base_From">
+        FROM facility f
+        JOIN tunnel_segment s ON s.id = f.segment_id
     </sql>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO facility (segment_id, facility_type, status, created_at)
-        VALUES (#{segmentId}, #{facilityType}, #{status}, UTC_TIMESTAMP())
+        INSERT INTO facility (segment_id, facility_name, facility_type, location, status, created_at)
+        VALUES (#{segmentId}, #{facilityName}, #{facilityType}, #{location}, #{status}, UTC_TIMESTAMP())
     </insert>
 
     <select id="findBySegmentId" resultMap="FacilityResult">
-        SELECT <include refid="Base_Column_List"/> FROM facility
-        WHERE segment_id = #{segmentId} ORDER BY id
+        SELECT <include refid="Base_Column_List"/>
+        <include refid="Base_From"/>
+        WHERE f.segment_id = #{segmentId} ORDER BY f.id
     </select>
 
     <select id="selectById" resultMap="FacilityResult">
-        SELECT <include refid="Base_Column_List"/> FROM facility WHERE id = #{id}
+        SELECT <include refid="Base_Column_List"/>
+        <include refid="Base_From"/>
+        WHERE f.id = #{id}
+    </select>
+
+    <!-- 行锁读取：单表 FOR UPDATE，只锁设施行；舱段行锁由业务层按 id 升序统一加，避免死锁 -->
+    <select id="selectByIdForUpdate" resultMap="FacilityResult">
+        SELECT f.id, f.segment_id, f.facility_name, f.facility_type, f.location, f.status,
+               f.created_at, f.updated_at
+        FROM facility f
+        WHERE f.id = #{id}
+        FOR UPDATE
     </select>
 
     <select id="findAll" resultMap="FacilityResult">
-        SELECT <include refid="Base_Column_List"/> FROM facility ORDER BY id
+        SELECT <include refid="Base_Column_List"/>
+        <include refid="Base_From"/>
+        ORDER BY f.id
     </select>
 
+    <!--
+      档案更新：segment_id / facility_name / location 一次性写同一行，
+      updated_at 作为行版本带在 WHERE 中；陈旧表单或并发已改时影响 0 行，
+      由业务层回滚并报「记录已被他人修改」，旧值不会写回。
+    -->
+    <update id="updateProfile">
+        UPDATE facility
+        SET segment_id = #{segmentId},
+            facility_name = #{facilityName},
+            location = #{location},
+            updated_at = #{nextVersion}
+        WHERE id = #{id}
+          AND <![CDATA[ (updated_at = #{expectedVersion}
+                        OR (updated_at IS NULL AND #{expectedVersion} IS NULL)) ]]>
+    </update>
+
+    <!-- 带状态条件：并发或重复点击时只有一次生效，重复提交影响 0 行由业务层报错 -->
     <update id="updateStatus">
-        UPDATE facility SET status = #{status} WHERE id = #{id}
+        UPDATE facility SET status = #{status}
+        WHERE id = #{id} AND status != #{status}
     </update>
 
     <select id="countAll" resultType="int">

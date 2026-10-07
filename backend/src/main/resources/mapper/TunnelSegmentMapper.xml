@@ -100,8 +100,11 @@
     <resultMap id="FacilityInline" type="com.utility.tunnel.entity.Facility">
         <id column="f_id" property="id"/>
         <result column="f_segment_id" property="segmentId"/>
+        <result column="f_facility_name" property="facilityName"/>
         <result column="f_facility_type" property="facilityType"/>
+        <result column="f_location" property="location"/>
         <result column="f_status" property="status"/>
+        <result column="f_updated_at" property="updatedAt"/>
     </resultMap>
 
     <select id="selectWithChildren" resultMap="SegmentWithChildren">
@@ -126,8 +129,11 @@
             pt.last_patrol_at AS pt_last_patrol_at,
             f.id            AS f_id,
             f.segment_id    AS f_segment_id,
+            f.facility_name AS f_facility_name,
             f.facility_type AS f_facility_type,
-            f.status        AS f_status
+            f.location      AS f_location,
+            f.status        AS f_status,
+            f.updated_at    AS f_updated_at
         FROM tunnel_segment s
         LEFT JOIN pipeline p ON p.segment_id = s.id
         LEFT JOIN patrol_point pt ON pt.segment_id = s.id

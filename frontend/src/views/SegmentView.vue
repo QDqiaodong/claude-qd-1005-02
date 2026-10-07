@@ -183,10 +183,14 @@ onMounted(load)
           <el-table-column prop="location" label="位置" />
           <el-table-column prop="lastPatrolAt" label="最近巡检" />
         </el-table>
-        <div class="panel-title" style="margin:10px 0 4px">附属设备（{{ detail.facilities.length }}）</div>
+        <div class="panel-title" style="margin:10px 0 4px">附属设施（{{ detail.facilities.length }}）</div>
         <el-table :data="detail.facilities" border size="small">
-          <el-table-column prop="facilityType" label="类型" />
-          <el-table-column prop="status" label="状态" />
+          <el-table-column prop="facilityName" label="设施名称" min-width="160" />
+          <el-table-column prop="facilityType" label="类型" width="90" />
+          <el-table-column prop="location" label="安装位置" min-width="150">
+            <template #default="{ row }">{{ row.location || '—' }}</template>
+          </el-table-column>
+          <el-table-column prop="status" label="状态" width="80" />
         </el-table>
       </div>
     </el-dialog>
